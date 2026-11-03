@@ -18,7 +18,7 @@
 4. 等待发布，访问 `https://你的用户名.github.io/ziyou-journal/`。
 5. 返回 Supabase **Authentication → URL Configuration**：
    - **Site URL** 设置为 `https://你的用户名.github.io/ziyou-journal/`
-   - **Redirect URLs** 增加 `https://你的用户名.github.io/ziyou-journal/**`
+   - **Redirect URLs** 增加 `https://你的用户名.github.io/ziyou-journal/`（与 Site URL 完全一致，保留末尾 `/`）
    - 用真实部署 URL 替换示例。邮件验证与密码重置需要正确的重定向设置。
 6. 在网页上注册，完成邮箱验证后登录。新建练习并等待状态显示「云端已同步」。在另一设备登录同一账号验证数据同步。
 
@@ -68,3 +68,12 @@ icon-512.png           应用图标
 ## 品牌与使用说明
 
 本版本采用原创名称「自有 · 手记」、蓝紫灰配色及重新绘制的应用图标。练习问题是根据通用的情绪记录、责任区分与行动反思框架独立组织的，不使用截图中的产品标识或页面设计。名称、配色调整并不等于完成法律意义上的版权审查；请勿复制原商品的文字、排版或图像。
+
+## 邮件跳转排查
+
+注册实现在 `index.html` 的 `authAction` 中，使用 `/auth/v1/signup` REST API。
+`authRequest` 为注册和密码重置请求添加 URL 查询参数 `redirect_to`，从当前页面目录生成完整回跳地址，保留 GitHub Pages 项目路径，并排除查询参数及 hash。直接调用 REST API 时不要把 SDK 的 `options.emailRedirectTo` 放进请求体。
+
+本仓库部署地址为 `https://yolandazx7.github.io/ziyou-note/`，Supabase Site URL 和 Redirect URLs 都应包含这个完整地址。
+修复部署后重新获取邮件，检查新链接的 `redirect_to`（可能经过 URL 编码）是否为这个地址。旧邮件中的链接不会因代码或控制台设置更新而改变。已确认的账号可以直接返回应用登录，无需重新注册。
+如果新邮件仍指向根目录，请检查浏览器 Network 中 signup 请求的 `redirect_to`、实际部署版本，以及 Supabase 的确认邮件模板是否使用默认 `{{ .ConfirmationURL }}`。

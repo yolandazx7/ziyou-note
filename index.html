@@ -28,7 +28,14 @@ async function request(path,{method='GET',body,token,extraHeaders={}}={}){
 }
 async function refresh(){if(!session?.refresh_token)return false;try{let data=await request('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:session.refresh_token}});setSession(data);return true}catch(e){setStatus('登录已失效，请重新登录',true);return false}}
 function setSession(data){const priorUser=session?.user?.id;session={access_token:data.access_token,refresh_token:data.refresh_token,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600),user:data.user};localStorage.setItem(tokenKey,JSON.stringify(session));if(priorUser!==session.user.id)showAuth()}
-async function authRequest(path,body){return request(path,{method:'POST',body})}
+// Keep the project path (for example /ziyou-note/), excluding query/hash tokens.
+const AUTH_REDIRECT_URL=new URL('./',location.href).href;
+async function authRequest(path,body){
+ if(path==='/auth/v1/signup'||path==='/auth/v1/recover'){
+  path+='?redirect_to='+encodeURIComponent(AUTH_REDIRECT_URL);
+ }
+ return request(path,{method:'POST',body});
+}
 async function authAction(action){if(!configured)return;let email=$('#email').value.trim(),password=$('#password').value;$('#authMessage').textContent='正在处理…';try{
  if(!email)throw Error('请输入邮箱');
  if(action==='reset'){await authRequest('/auth/v1/recover',{email});$('#authMessage').textContent='如果邮箱已注册，将收到密码重置邮件。';return}
