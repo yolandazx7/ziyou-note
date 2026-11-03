@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "自有手记｜私人反思练习本",
+  "short_name": "自有手记",
+  "description": "观察情绪、厘清责任、找到自己的下一步",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f4fa",
+  "theme_color": "#444d83",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
